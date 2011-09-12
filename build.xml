@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project default="buildInstaller">
+	<description>Buildfile for Easy Embossing Utility Windows Installer</description>
+	
+	<!-- ================================================================== -->
+	<!-- Common properties                                                  -->
+	<!-- ================================================================== -->
+	<property name="ant-build.dir" value="${basedir}/ant-build"/>
+	<property name="ant-resources.dir" value="${ant-build.dir}/resources"/>
+	<property name="ant-output.dir" value="${ant-build.dir}/output"/>
+		
+	<property name="dist.dir" value="${ant-output.dir}/dist"/>
+	<property name="temp.dir" value="${ant-build.dir}/temp"/>
+	
+	<property name="distribution.zip" value="${ant-resources.dir}/Easy Embossing Utility.zip"/>
+	<property name="jar.file" value="${temp.dir}/e2u/e2u.jar"/>
+	<property name="installjar.file" value="${ant-resources.dir}/emboss.jar"/>
+
+	<!-- Requires NSIS with the FontName plugin (http://nsis.sourceforge.net/FontName_plug-in) -->
+	<property name="nsis.dir" value="C:\Program\NSIS"/>
+	
+	<!-- Timestamp format definition -->
+	<tstamp>
+		<format property="ISO-TODAY" pattern="yyyy-MM-dd"/>
+	</tstamp>
+
+	<taskdef name="nsis" classname="net.sf.nsisant.Task">
+		<classpath location="${ant-resources.dir}/nsisant-1.2.jar"/>
+	</taskdef>
+	
+	<!-- ================================================================== -->
+	<!-- Private targets                                                    -->
+	<!-- ================================================================== -->
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: emptyDistDir                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="emptyDistDir" description="Empty distribution dir">
+    	<delete dir="${dist.dir}"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: emptyTempDir                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="emptyTempDir" description="Empty temp dir">
+    	<delete dir="${temp.dir}"/>
+    	<mkdir dir="${temp.dir}"/>
+    </target>
+
+	<!-- ================================================================== -->
+	<!-- Public targets                                                     -->
+	<!-- ================================================================== -->
+	
+	<!-- ================================= 
+          target: buildInstaller              
+         ================================= -->
+    <target name="buildInstaller" depends="emptyDistDir, emptyTempDir" description="Build Windows installer">
+    	<unzip dest="${temp.dir}" src="${distribution.zip}" encoding="UTF-8"/>
+    	<copy file="${jar.file}" tofile="${installjar.file}"/>
+    	<nsis script="${ant-resources.dir}/installer.nsi" verbosity="2" path="${nsis.dir}"/>
+    	<delete file="${installjar.file}"/>
+    	<delete dir="${temp.dir}"/>
+    </target>
+	
+</project>
