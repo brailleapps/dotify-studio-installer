@@ -3,7 +3,7 @@
 !include FontName.nsh
 !include WinMessages.nsh
 
-!define /date DATE "%d %b %Y"
+!define /date DATE "%Y-%m-%d"
 
 # for DetectJRE
 !define PRODUCT_NAME "Easy Embossing Utility"
@@ -14,7 +14,7 @@
 # define installer name
 Name "Easy Embossing Utility"
 Caption "Easy Embossing Utility"
-outFile "../output/dist/Easy Embossing Utility installer (${DATE}).exe"
+outFile "../output/dist/Easy Embossing Utility Windows installer ${DATE}.exe"
  
 # set desktop as install directory
 InstallDir $PROGRAMFILES\e2u
