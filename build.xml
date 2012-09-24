@@ -18,7 +18,7 @@
 	<property name="installjar.file" value="${ant-resources.dir}/emboss.jar"/>
 
 	<!-- Requires NSIS with the FontName plugin (http://nsis.sourceforge.net/FontName_plug-in) -->
-	<property name="nsis.dir" value="C:\Program\NSIS"/>
+	<property name="nsis.dir" value="C:\Program Files (x86)\NSIS"/>
 	
 	<!-- Timestamp format definition -->
 	<tstamp>
