@@ -25,8 +25,8 @@ file "favicon.ico"
 file "odt2braille6.ttf"
 
 setOutPath $INSTDIR\lib
-file "..\temp\e2u\lib\brailleUtils-core-1.2b.jar"
-file "..\temp\e2u\lib\brailleUtils-catalog-1.2b.jar"
+file "..\temp\e2u\lib\brailleUtils-core.jar"
+file "..\temp\e2u\lib\brailleUtils-catalog.jar"
 file "..\temp\e2u\lib\ajui-1.0b.jar"
 file "..\temp\e2u\lib\isorelax.jar"
 file "..\temp\e2u\lib\jing.jar"
@@ -94,8 +94,8 @@ delete $INSTDIR\e2u.exe
 delete $INSTDIR\favicon.ico
 delete $INSTDIR\odt2braille6.ttf
 
-delete $INSTDIR\lib\brailleUtils-core-1.2b.jar
-delete $INSTDIR\lib\brailleUtils-catalog-1.2b.jar
+delete $INSTDIR\lib\brailleUtils-core.jar
+delete $INSTDIR\lib\brailleUtils-catalog.jar
 delete $INSTDIR\lib\ajui-1.0b.jar
 delete $INSTDIR\lib\isorelax.jar
 delete $INSTDIR\lib\jing.jar
