@@ -1,3 +1,63 @@
+defaultTasks 'buildInstaller'
+
+def launch4jDir = 'C:\\Program Files (x86)\\Launch4j'
+def nsisDir = 'C:\\Program Files (x86)\\NSIS'
+def outputDir = 'ant-build/output'
+def resourceDir = 'ant-build/resources'
+def tempDir = 'ant-build/temp'
+def jarFile ="${tempDir}/e2u/e2u.jar"
+
+configurations {
+	nsis
+	launch4j
+}
+dependencies {
+	nsis files('ant-build/resources/nsisant-1.2.jar')
+	launch4j fileTree(dir: "${launch4jDir}/lib", include: '*.jar')
+	launch4j files("${launch4jDir}/launch4j.jar")
+}
+
+task clean {
+	doLast() {
+		delete tempDir
+		delete outputDir
+	}
+}
+
+task unzip(type: Copy) {
+    from zipTree(file("${resourceDir}/Easy Embossing Utility.zip"))
+    into file("${tempDir}")
+}
+
+task makeAppExe(dependsOn: 'unzip') {
+	doLast() {
+		ant.taskdef(name: 'launch4j',
+					classname: 'net.sf.launch4j.ant.Launch4jTask',
+					classpath: configurations.launch4j.asPath)
+		ant.launch4j(configFile: "${resourceDir}/launch4j.xml")
+		delete jarFile
+	}
+}
+
+task copyExe(type: Copy, dependsOn: 'makeAppExe') {
+	from "${tempDir}/e2u"
+	include '*.exe'
+	into resourceDir
+}
+
+task buildInstaller(dependsOn: 'copyExe') {
+	doLast() {
+		new File("${projectDir}/${outputDir}/dist").mkdirs()
+		ant.taskdef(name: 'nsis', 
+			classname: 'net.sf.nsisant.Task',
+			classpath: configurations.nsis.asPath)
+		ant.nsis(script: "${resourceDir}/installer.nsi",
+				verbosity: 2,
+				path: nsisDir)
+		delete "${resourceDir}/e2u.exe"
+	}
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.0'
 }
