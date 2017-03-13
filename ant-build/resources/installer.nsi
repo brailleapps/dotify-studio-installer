@@ -6,9 +6,9 @@
 !define /date DATE "%Y-%m-%d"
 
 # define installer name
-Name "Easy Embossing Utility"
-Caption "Easy Embossing Utility"
-outFile "../output/dist/Easy Embossing Utility Windows installer ${DATE}.exe"
+Name "Dotify Studio"
+Caption "Dotify Studio"
+outFile "../output/dist/dotify-studio-installer-${DATE}.exe"
  
 # set desktop as install directory
 InstallDir $PROGRAMFILES\e2u
@@ -52,14 +52,14 @@ WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\open\command" "" "$\"$PROGRAM
 WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\print\command" "" "$\"$PROGRAMFILES\e2u\e2u.exe$\" -emboss $\"%1$\""
 
 # create shortcut
-CreateDirectory "$SMPROGRAMS\Easy Embossing Utility"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Embosser test - Butterfly.lnk" "$INSTDIR\examples\butterfly.pef"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Embosser test - 6 dot chart.lnk" "$INSTDIR\examples\6-dot-chart.pef"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Embosser test - 8 dot chart.lnk" "$INSTDIR\examples\8-dot-chart.pef"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Release notes.lnk" "$INSTDIR\docs\Release notes.txt"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Getting started.lnk" "$INSTDIR\docs\Getting started.txt"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Known issues.lnk" "$INSTDIR\docs\Known issues.txt"
-createShortCut "$SMPROGRAMS\Easy Embossing Utility\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+CreateDirectory "$SMPROGRAMS\Dotify Studio"
+createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - Butterfly.lnk" "$INSTDIR\examples\butterfly.pef"
+createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk" "$INSTDIR\examples\6-dot-chart.pef"
+createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk" "$INSTDIR\examples\8-dot-chart.pef"
+createShortCut "$SMPROGRAMS\Dotify Studio\Release notes.lnk" "$INSTDIR\docs\Release notes.txt"
+createShortCut "$SMPROGRAMS\Dotify Studio\Getting started.lnk" "$INSTDIR\docs\Getting started.txt"
+createShortCut "$SMPROGRAMS\Dotify Studio\Known issues.lnk" "$INSTDIR\docs\Known issues.txt"
+createShortCut "$SMPROGRAMS\Dotify Studio\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
 # install fonts
 StrCpy $FONT_DIR $INSTDIR
@@ -81,13 +81,13 @@ section "Uninstall"
 delete $INSTDIR\uninstall.exe
 
 # delete shortcut
-delete "$SMPROGRAMS\Easy Embossing Utility\Uninstall.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Release notes.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Getting started.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Known issues.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Embosser test - Butterfly.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Embosser test - 6 dot chart.lnk"
-delete "$SMPROGRAMS\Easy Embossing Utility\Embosser test - 8 dot chart.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Uninstall.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Release notes.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Getting started.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Known issues.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Embosser test - Butterfly.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk"
  
 # now delete installed file
 delete $INSTDIR\e2u.exe
