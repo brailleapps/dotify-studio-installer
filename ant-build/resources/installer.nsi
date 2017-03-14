@@ -11,45 +11,44 @@ Caption "Dotify Studio"
 outFile "../output/dist/dotify-studio-installer-${DATE}.exe"
  
 # set desktop as install directory
-InstallDir $PROGRAMFILES\e2u
+InstallDir $PROGRAMFILES\dotify-studio
  
 # default section start
 section
 
 # define output path
 setOutPath $INSTDIR
- 
 # specify file to go in output path
-file "e2u.exe"
+file "..\temp\dotify-studio\dotify-studio.exe"
 file "favicon.ico"
 file "odt2braille6.ttf"
 
 setOutPath $INSTDIR\lib
-file "..\temp\e2u\lib\brailleUtils-core.jar"
-file "..\temp\e2u\lib\brailleUtils-catalog.jar"
-file "..\temp\e2u\lib\ajui-1.0b.jar"
-file "..\temp\e2u\lib\isorelax.jar"
-file "..\temp\e2u\lib\jing.jar"
-file "..\temp\e2u\lib\saxon8.jar"
-file "..\temp\e2u\lib\xercesImpl.jar"
-file "..\temp\e2u\lib\xml-apis.jar"
+file "..\temp\dotify-studio\lib\ajui-1.0.0-SNAPSHOT.jar"
+file "..\temp\dotify-studio\lib\braille-utils.api-3.0.1.jar"
+file "..\temp\dotify-studio\lib\braille-utils.impl-3.0.0-beta.jar"
+file "..\temp\dotify-studio\lib\braille-utils.pef-tools-2.0.0-alpha.jar"
+file "..\temp\dotify-studio\lib\dotify-studio-0.1.0-SNAPSHOT.jar"
+file "..\temp\dotify-studio\lib\jing-20120724.0.0.jar"
+file "..\temp\dotify-studio\lib\saxon-he-9.5.1.5.jar"
+file "..\temp\dotify-studio\lib\xml-apis-1.4.01.jar"
 
 setOutPath $INSTDIR\examples
-file "..\temp\e2u\examples\butterfly.pef"
-file "..\temp\e2u\examples\6-dot-chart.pef"
-file "..\temp\e2u\examples\8-dot-chart.pef"
+file "..\temp\dotify-studio\examples\butterfly.pef"
+file "..\temp\dotify-studio\examples\6-dot-chart.pef"
+file "..\temp\dotify-studio\examples\8-dot-chart.pef"
 
 setOutPath $INSTDIR\docs
-file "..\temp\e2u\docs\Release notes.txt"
-file "..\temp\e2u\docs\Getting started.txt"
-file "..\temp\e2u\docs\Known issues.txt"
+file "..\temp\dotify-studio\docs\Release notes.txt"
+file "..\temp\dotify-studio\docs\Getting started.txt"
+file "..\temp\dotify-studio\docs\Known issues.txt"
 
  # write reg keys
 WriteRegStr HKCR ".pef" "" "e2u.PortableEmbosserFormat"
 WriteRegStr HKCR "e2u.PortableEmbosserFormat" "" "Portable Embosser Format"
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\DefaultIcon" "" "$PROGRAMFILES\e2u\favicon.ico,0"
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\open\command" "" "$\"$PROGRAMFILES\e2u\e2u.exe$\" -view $\"%1$\""
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\print\command" "" "$\"$PROGRAMFILES\e2u\e2u.exe$\" -emboss $\"%1$\""
+WriteRegStr HKCR "e2u.PortableEmbosserFormat\DefaultIcon" "" "$PROGRAMFILES\dotify-studio\favicon.ico,0"
+WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\open\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -view $\"%1$\""
+WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\print\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -emboss $\"%1$\""
 
 # create shortcut
 CreateDirectory "$SMPROGRAMS\Dotify Studio"
@@ -90,21 +89,23 @@ delete "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk"
 delete "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk"
  
 # now delete installed file
-delete $INSTDIR\e2u.exe
 delete $INSTDIR\favicon.ico
 delete $INSTDIR\odt2braille6.ttf
+delete $INSTDIR\dotify-studio.exe
 
-delete $INSTDIR\lib\brailleUtils-core.jar
-delete $INSTDIR\lib\brailleUtils-catalog.jar
-delete $INSTDIR\lib\ajui-1.0b.jar
-delete $INSTDIR\lib\isorelax.jar
-delete $INSTDIR\lib\jing.jar
-delete $INSTDIR\lib\saxon8.jar
-delete $INSTDIR\lib\xercesImpl.jar
-delete $INSTDIR\lib\xml-apis.jar
+delete $INSTDIR\lib\ajui-1.0.0-SNAPSHOT.jar
+delete $INSTDIR\lib\braille-utils.api-3.0.1.jar
+delete $INSTDIR\lib\braille-utils.impl-3.0.0-beta.jar
+delete $INSTDIR\lib\braille-utils.pef-tools-2.0.0-alpha.jar
+delete $INSTDIR\lib\dotify-studio-0.1.0-SNAPSHOT.jar
+delete $INSTDIR\lib\jing-20120724.0.0.jar
+delete $INSTDIR\lib\saxon-he-9.5.1.5.jar
+delete $INSTDIR\lib\xml-apis-1.4.01.jar
+
 delete "$INSTDIR\docs\Getting started.txt"
 delete "$INSTDIR\docs\Known issues.txt"
 delete "$INSTDIR\docs\Release notes.txt"
+
 delete $INSTDIR\examples\butterfly.pef
 delete $INSTDIR\examples\6-dot-chart.pef
 delete $INSTDIR\examples\8-dot-chart.pef

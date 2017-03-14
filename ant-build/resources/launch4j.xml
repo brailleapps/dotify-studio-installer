@@ -1,8 +1,8 @@
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
+  <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>..\temp\e2u\e2u.jar</jar>
-  <outfile>..\temp\e2u\e2u.exe</outfile>
+  <jar>lib\dotify-studio-0.1.0-SNAPSHOT.jar</jar>
+  <outfile>..\temp\dotify-studio\dotify-studio.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>

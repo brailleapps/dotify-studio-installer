@@ -5,13 +5,23 @@ def nsisDir = 'C:\\Program Files (x86)\\NSIS'
 def outputDir = 'ant-build/output'
 def resourceDir = 'ant-build/resources'
 def tempDir = 'ant-build/temp'
-def jarFile ="${tempDir}/e2u/e2u.jar"
 
 configurations {
 	nsis
 	launch4j
+	app
 }
+
+repositories {
+    mavenCentral()
+    //mavenLocal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
 dependencies {
+	app ("org.daisy.dotify:dotify-studio:0.1.0-SNAPSHOT@zip") {
+		transitive false
+	}
 	nsis files('ant-build/resources/nsisant-1.2.jar')
 	launch4j fileTree(dir: "${launch4jDir}/lib", include: '*.jar')
 	launch4j files("${launch4jDir}/launch4j.jar")
@@ -25,8 +35,18 @@ task clean {
 }
 
 task unzip(type: Copy) {
-    from zipTree(file("${resourceDir}/Easy Embossing Utility.zip"))
+    from zipTree(file(configurations.app.iterator().next()))
     into file("${tempDir}")
+    eachFile {details ->
+		def targetPath = modifyPath(details.path)
+		details.path = targetPath
+	}
+}
+
+def modifyPath(def path) {
+	def modified=path.replaceAll('\\Adotify-studio[^/]*(.+)', {"dotify-studio${it[1]}"})
+	println modified
+	return modified
 }
 
 task makeAppExe(dependsOn: 'unzip') {
@@ -35,17 +55,10 @@ task makeAppExe(dependsOn: 'unzip') {
 					classname: 'net.sf.launch4j.ant.Launch4jTask',
 					classpath: configurations.launch4j.asPath)
 		ant.launch4j(configFile: "${resourceDir}/launch4j.xml")
-		delete jarFile
 	}
 }
 
-task copyExe(type: Copy, dependsOn: 'makeAppExe') {
-	from "${tempDir}/e2u"
-	include '*.exe'
-	into resourceDir
-}
-
-task buildInstaller(dependsOn: 'copyExe') {
+task buildInstaller(dependsOn: 'makeAppExe') {
 	doLast() {
 		new File("${projectDir}/${outputDir}/dist").mkdirs()
 		ant.taskdef(name: 'nsis', 
@@ -54,7 +67,6 @@ task buildInstaller(dependsOn: 'copyExe') {
 		ant.nsis(script: "${resourceDir}/installer.nsi",
 				verbosity: 2,
 				path: nsisDir)
-		delete "${resourceDir}/e2u.exe"
 	}
 }
 
