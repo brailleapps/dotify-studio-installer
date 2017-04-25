@@ -6,6 +6,9 @@ def outputDir = 'ant-build/output'
 def resourceDir = 'ant-build/resources'
 def tempDir = 'ant-build/temp'
 
+def locationPrefix = "file \"dotify-studio\\"
+def appBase = "${tempDir}/dotify-studio"
+
 configurations {
 	nsis
 	launch4j
@@ -19,7 +22,7 @@ repositories {
 }
 
 dependencies {
-	app ("org.daisy.dotify:dotify-studio:0.1.0-SNAPSHOT@zip") {
+	app ("org.daisy.dotify:dotify-studio:$version@zip") {
 		transitive false
 	}
 	nsis files('ant-build/resources/nsisant-1.2.jar')
@@ -49,25 +52,91 @@ def modifyPath(def path) {
 	return modified
 }
 
-task makeAppExe(dependsOn: 'unzip') {
+task copyResources(type: Copy) {
+	from ("${resourceDir}") {
+		include '*.ico'
+		include '*.ttf'
+	} 
+	into ("${tempDir}")
+}
+
+task updateLaunch4jTemplate() {
+	doLast() {
+		String contents = file('ant-build/resources/launch4j.xml').getText('UTF-8')
+		file("${tempDir}/launch4j.xml").write(contents.replaceAll('\\Q${version}\\E', "$version"), 'UTF-8')
+	}
+}
+
+task updateNsisTemplate() {
+	doLast() {
+		String replaceInstall = getInstallPaths(appBase, locationPrefix)
+		String replaceUninstall = getUninstallPaths(appBase)
+		String contents = file('ant-build/resources/installer.nsi').getText('UTF-8')
+							.replace('${gradle-install-files}', replaceInstall)
+							.replace('${gradle-uninstall-files}', replaceUninstall)
+		file("${tempDir}/installer.nsi").write(contents, 'UTF-8')
+	}
+}
+
+task makeAppExe(dependsOn: ['unzip', 'copyResources', 'updateLaunch4jTemplate']) {
 	doLast() {
 		ant.taskdef(name: 'launch4j',
 					classname: 'net.sf.launch4j.ant.Launch4jTask',
 					classpath: configurations.launch4j.asPath)
-		ant.launch4j(configFile: "${resourceDir}/launch4j.xml")
+		ant.launch4j(configFile: "${tempDir}/launch4j.xml")
 	}
 }
 
-task buildInstaller(dependsOn: 'makeAppExe') {
+task buildInstaller(dependsOn: ['makeAppExe', 'updateNsisTemplate']) {
 	doLast() {
 		new File("${projectDir}/${outputDir}/dist").mkdirs()
 		ant.taskdef(name: 'nsis', 
 			classname: 'net.sf.nsisant.Task',
 			classpath: configurations.nsis.asPath)
-		ant.nsis(script: "${resourceDir}/installer.nsi",
+		ant.nsis(script: "${tempDir}/installer.nsi",
 				verbosity: 2,
 				path: nsisDir)
 	}
+}
+
+def toPaths(subfolder, base, targetPrefix, targetSuffix) {
+	def baseURI = file(base).toURI()
+	def from = subfolder==null||"".equals(subfolder)?base:"${base}/${subfolder}"
+	return fileTree(dir: from, include: '*')
+				.filter{it.isFile()}
+				.files
+				.collect{"${targetPrefix}"+ URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8").replaceAll("/", "\\\\") +targetSuffix}
+				.join('\n')
+}
+
+def toInstallPaths(subfolder, base, targetPrefix) {
+	return "setOutPath \$INSTDIR"+(subfolder==null||"".equals(subfolder)?"":"\\")+"${subfolder}\n" + toPaths(subfolder, base, targetPrefix, "\"") + "\n\n"
+}
+
+def toUninstallPaths(subfolder, base) {
+	return toPaths(subfolder, base, "delete \"\$INSTDIR\\", "\"") +"\n\n"
+}
+
+def getInstallPaths(base, targetPrefix) {
+	def baseURI = file(base).toURI()
+	def result = new StringBuilder()
+	result.append(toInstallPaths("", base, targetPrefix))
+	new File(base).eachDir{
+		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
+		result.append(toInstallPaths(subfolder[0..-2], base, targetPrefix))
+	}
+	return result.toString()
+}
+
+def getUninstallPaths(base) {
+	def baseURI = file(base).toURI()
+	def result = new StringBuilder()
+	result.append(toUninstallPaths("", base))
+	new File(base).eachDir{
+		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
+		result.append(toUninstallPaths(subfolder[0..-2], base))
+	}
+	return result.toString()
 }
 
 task wrapper(type: Wrapper) {

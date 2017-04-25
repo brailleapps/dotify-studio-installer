@@ -16,39 +16,14 @@ InstallDir $PROGRAMFILES\dotify-studio
 # default section start
 section
 
-# define output path
-setOutPath $INSTDIR
-# specify file to go in output path
-file "..\temp\dotify-studio\dotify-studio.exe"
-file "favicon.ico"
-file "odt2braille6.ttf"
-
-setOutPath $INSTDIR\lib
-file "..\temp\dotify-studio\lib\ajui-1.0.0-SNAPSHOT.jar"
-file "..\temp\dotify-studio\lib\braille-utils.api-3.0.1.jar"
-file "..\temp\dotify-studio\lib\braille-utils.impl-3.0.0-beta.jar"
-file "..\temp\dotify-studio\lib\braille-utils.pef-tools-2.0.0-alpha.jar"
-file "..\temp\dotify-studio\lib\dotify-studio-0.1.0-SNAPSHOT.jar"
-file "..\temp\dotify-studio\lib\jing-20120724.0.0.jar"
-file "..\temp\dotify-studio\lib\saxon-he-9.5.1.5.jar"
-file "..\temp\dotify-studio\lib\xml-apis-1.4.01.jar"
-
-setOutPath $INSTDIR\examples
-file "..\temp\dotify-studio\examples\butterfly.pef"
-file "..\temp\dotify-studio\examples\6-dot-chart.pef"
-file "..\temp\dotify-studio\examples\8-dot-chart.pef"
-
-setOutPath $INSTDIR\docs
-file "..\temp\dotify-studio\docs\Release notes.txt"
-file "..\temp\dotify-studio\docs\Getting started.txt"
-file "..\temp\dotify-studio\docs\Known issues.txt"
+${gradle-install-files}
 
  # write reg keys
-WriteRegStr HKCR ".pef" "" "e2u.PortableEmbosserFormat"
-WriteRegStr HKCR "e2u.PortableEmbosserFormat" "" "Portable Embosser Format"
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\DefaultIcon" "" "$PROGRAMFILES\dotify-studio\favicon.ico,0"
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\open\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -view $\"%1$\""
-WriteRegStr HKCR "e2u.PortableEmbosserFormat\shell\print\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -emboss $\"%1$\""
+WriteRegStr HKCR ".pef" "" "dotify-studio.PortableEmbosserFormat"
+WriteRegStr HKCR "dotify-studio.PortableEmbosserFormat" "" "Portable Embosser Format"
+WriteRegStr HKCR "dotify-studio.PortableEmbosserFormat\DefaultIcon" "" "$PROGRAMFILES\dotify-studio\favicon.ico,0"
+WriteRegStr HKCR "dotify-studio.PortableEmbosserFormat\shell\open\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -view $\"%1$\""
+WriteRegStr HKCR "dotify-studio.PortableEmbosserFormat\shell\print\command" "" "$\"$PROGRAMFILES\dotify-studio\dotify-studio.exe$\" -emboss $\"%1$\""
 
 # create shortcut
 CreateDirectory "$SMPROGRAMS\Dotify Studio"
@@ -89,29 +64,10 @@ delete "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk"
 delete "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk"
  
 # now delete installed file
-delete $INSTDIR\favicon.ico
-delete $INSTDIR\odt2braille6.ttf
-delete $INSTDIR\dotify-studio.exe
 
-delete $INSTDIR\lib\ajui-1.0.0-SNAPSHOT.jar
-delete $INSTDIR\lib\braille-utils.api-3.0.1.jar
-delete $INSTDIR\lib\braille-utils.impl-3.0.0-beta.jar
-delete $INSTDIR\lib\braille-utils.pef-tools-2.0.0-alpha.jar
-delete $INSTDIR\lib\dotify-studio-0.1.0-SNAPSHOT.jar
-delete $INSTDIR\lib\jing-20120724.0.0.jar
-delete $INSTDIR\lib\saxon-he-9.5.1.5.jar
-delete $INSTDIR\lib\xml-apis-1.4.01.jar
-
-delete "$INSTDIR\docs\Getting started.txt"
-delete "$INSTDIR\docs\Known issues.txt"
-delete "$INSTDIR\docs\Release notes.txt"
-
-delete $INSTDIR\examples\butterfly.pef
-delete $INSTDIR\examples\6-dot-chart.pef
-delete $INSTDIR\examples\8-dot-chart.pef
-
+${gradle-uninstall-files}
 
 DeleteRegKey HKCR ".pef"
-DeleteRegKey HKCR "e2u.PortableEmbosserFormat"
+DeleteRegKey HKCR "dotify-studio.PortableEmbosserFormat"
  
 sectionEnd

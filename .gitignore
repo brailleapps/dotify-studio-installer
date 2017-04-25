@@ -1,2 +1,3 @@
 .gradle
 ant-build/output/
+/build/
