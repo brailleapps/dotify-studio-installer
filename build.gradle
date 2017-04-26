@@ -1,10 +1,11 @@
+apply plugin: 'base'
 defaultTasks 'buildInstaller'
 
 def launch4jDir = 'C:\\Program Files (x86)\\Launch4j'
 def nsisDir = 'C:\\Program Files (x86)\\NSIS'
-def outputDir = 'ant-build/output'
+def outputDir = 'build/output'
 def resourceDir = 'ant-build/resources'
-def tempDir = 'ant-build/temp'
+def tempDir = 'build/tmp'
 
 def locationPrefix = "file \"dotify-studio\\"
 def appBase = "${tempDir}/dotify-studio"
@@ -28,13 +29,6 @@ dependencies {
 	nsis files('ant-build/resources/nsisant-1.2.jar')
 	launch4j fileTree(dir: "${launch4jDir}/lib", include: '*.jar')
 	launch4j files("${launch4jDir}/launch4j.jar")
-}
-
-task clean {
-	doLast() {
-		delete tempDir
-		delete outputDir
-	}
 }
 
 task unzip(type: Copy) {

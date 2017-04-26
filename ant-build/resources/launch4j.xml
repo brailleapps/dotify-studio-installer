@@ -2,7 +2,7 @@
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
   <jar>lib\dotify-studio-${version}.jar</jar>
-  <outfile>..\temp\dotify-studio\dotify-studio.exe</outfile>
+  <outfile>..\tmp\dotify-studio\dotify-studio.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
