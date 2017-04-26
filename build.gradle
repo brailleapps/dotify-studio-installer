@@ -1,3 +1,7 @@
+plugins {
+  id "de.inetsoftware.setupbuilder" version "1.8.0"
+}
+
 apply plugin: 'base'
 defaultTasks 'buildInstaller'
 
@@ -89,7 +93,7 @@ task deleteBin(type: Delete, dependsOn: 'unzip') {
 	delete "${appBase}/bin"
 }
 
-task makeAppExe(dependsOn: ['unzip', 'copyIcon', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
+task makeAppExe(dependsOn: ['unzip', 'deleteBin', 'copyIcon', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
 	doLast() {
 		ant.taskdef(name: 'launch4j',
 					classname: 'net.sf.launch4j.ant.Launch4jTask',
@@ -148,6 +152,30 @@ def getUninstallPaths(base) {
 		result.append(toUninstallPaths(subfolder[0..-2], base))
 	}
 	return result.toString()
+}
+
+setupBuilder {
+    vendor = 'DAISY Consortium'
+    application = releaseName
+    appIdentifier = releaseName
+    version = version.replace('-SNAPSHOT', '')
+    //licenseFile = 'license.txt'
+    // icons in different sizes for different usage. you can also use a single *.ico or *.icns file
+	icons = ['ant-build/resources/app-icon.ico']
+    // files for all platforms
+    from ("${appBase}") {
+        include '**/*.*'
+    }
+    failOnEmptyFrom=true
+    bundleJre = 1.8
+}
+
+msi.dependsOn('makeAppExe')
+
+msi {
+    // included to reduce the build time
+    languages = ['en-US']
+    wxsTemplate = './ant-build/resources/template.wxs'
 }
 
 task wrapper(type: Wrapper) {

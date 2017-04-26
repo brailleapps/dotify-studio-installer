@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+	<!-- Adds registry entries and shortcuts -->
+	<!-- Using [INSTALLDIR] instead of [#file_id] below because it doesn't appear to work, maybe it has something to do with the process 
+		of creating the actual file from the template -->
+  <Product>
+	<Directory Id="TARGETDIR">
+		<Directory Id="ProgramMenuFolder">
+			<Directory Id="ApplicationProgramsFolder" Name="Dotify Studio"/>
+		</Directory>
+	</Directory>
+	<DirectoryRef Id="ApplicationProgramsFolder">
+		<Component Id="ApplicationShortcut">
+			<Shortcut Id="shortcut_dotify_studio"		Name="Dotify Studio"				Target="[INSTALLDIR]dotify-studio.exe"/>
+			<Shortcut Id="shortcut_example_butterfly" 	Name="Embosser test - Butterfly" 	Target="[INSTALLDIR]examples\butterfly.pef"/>
+			<Shortcut Id="shortcut_example_6_dot" 		Name="Embosser test - 6 dot chart" 	Target="[INSTALLDIR]examples\6-dot-chart.pef"/>
+			<Shortcut Id="shortcut_example_8_dot" 		Name="Embosser test - 8 dot chart" 	Target="[INSTALLDIR]examples\8-dot-chart.pef"/>
+			<Shortcut Id="shortcut_releas_notes" 		Name="Release notes" 				Target="[INSTALLDIR]docs\Release notes.txt"/>
+			<Shortcut Id="shortcut_getting_started" 	Name="Getting started" 				Target="[INSTALLDIR]docs\Getting started.txt"/>
+			<Shortcut Id="shortcut_known_issues" 		Name="Known issues" 				Target="[INSTALLDIR]docs\Known issues.txt"/>
+			<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+			<!-- This is required as a Shortcut cannot serve as the KeyPath for a component when installing non-advertised shortcuts for the current users -->
+			<RegistryValue Root="HKCU" Key="Software\DAISY Consortium\Dotify Studio" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		</Component>
+	</DirectoryRef>
+	<DirectoryRef Id="INSTALLDIR">
+		<Component Id="RegistryEntries">
+			<RegistryKey Root="HKCR" Key=".pef">
+				<RegistryValue Type="string" Value="dotify-studio.PortableEmbosserFormat"/>
+			</RegistryKey>
+			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat">
+				<RegistryValue Type="string" Value="Portable Embosser Format"/>
+			</RegistryKey>
+			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat\DefaultIcon">
+				<RegistryValue Type="string" Value="[INSTALLDIR]favicon.ico,0"/>
+			</RegistryKey>
+			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat\shell\open\command">
+				<RegistryValue Type="string" Value="&quot;[INSTALLDIR]dotify-studio.exe&quot; -view &quot;%1&quot;"/>
+			</RegistryKey>
+			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat\shell\print\command">
+				<RegistryValue Type="string" Value="&quot;[INSTALLDIR]dotify-studio.exe&quot; -emboss &quot;%1&quot;"/>
+			</RegistryKey>
+		</Component>
+	</DirectoryRef>
+  	<Feature Id="MainApplication">
+  		<ComponentRef Id="RegistryEntries"/>
+  		<ComponentRef Id="ApplicationShortcut"/>
+  	</Feature>
+  </Product>
+</Wix>
