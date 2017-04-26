@@ -27,6 +27,7 @@ WriteRegStr HKCR "dotify-studio.PortableEmbosserFormat\shell\print\command" "" "
 
 # create shortcut
 CreateDirectory "$SMPROGRAMS\Dotify Studio"
+createShortCut "$SMPROGRAMS\Dotify Studio\Dotify Studio.lnk" "$INSTDIR\dotify-studio.exe"
 createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - Butterfly.lnk" "$INSTDIR\examples\butterfly.pef"
 createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk" "$INSTDIR\examples\6-dot-chart.pef"
 createShortCut "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk" "$INSTDIR\examples\8-dot-chart.pef"
@@ -62,6 +63,7 @@ delete "$SMPROGRAMS\Dotify Studio\Known issues.lnk"
 delete "$SMPROGRAMS\Dotify Studio\Embosser test - Butterfly.lnk"
 delete "$SMPROGRAMS\Dotify Studio\Embosser test - 6 dot chart.lnk"
 delete "$SMPROGRAMS\Dotify Studio\Embosser test - 8 dot chart.lnk"
+delete "$SMPROGRAMS\Dotify Studio\Dotify Studio.lnk"
  
 # now delete installed file
 
