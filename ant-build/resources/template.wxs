@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-	<!-- Adds registry entries and shortcuts -->
+	<!-- Adds registry entries, shortcuts and fonts -->
 	<!-- Using [INSTALLDIR] instead of [#file_id] below because it doesn't appear to work, maybe it has something to do with the process 
 		of creating the actual file from the template -->
   <Product>
@@ -8,6 +8,7 @@
 		<Directory Id="ProgramMenuFolder">
 			<Directory Id="ApplicationProgramsFolder" Name="Dotify Studio"/>
 		</Directory>
+		<Directory Id="FontsFolder"/>
 	</Directory>
 	<DirectoryRef Id="ApplicationProgramsFolder">
 		<Component Id="ApplicationShortcut">
@@ -21,6 +22,12 @@
 			<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
 			<!-- This is required as a Shortcut cannot serve as the KeyPath for a component when installing non-advertised shortcuts for the current users -->
 			<RegistryValue Root="HKCU" Key="Software\DAISY Consortium\Dotify Studio" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+		</Component>
+	</DirectoryRef>
+	<DirectoryRef Id="FontsFolder">
+		<Component Id="InstallFonts">
+			<!-- This path is relative to the generated wxs file under build/tmp/msi -->
+			<File Id="odt2braille6.ttf" Source="..\odt2braille6.ttf" TrueType="yes" />
 		</Component>
 	</DirectoryRef>
 	<DirectoryRef Id="INSTALLDIR">
@@ -45,6 +52,7 @@
   	<Feature Id="MainApplication">
   		<ComponentRef Id="RegistryEntries"/>
   		<ComponentRef Id="ApplicationShortcut"/>
+  		<ComponentRef Id="InstallFonts"/>
   	</Feature>
   </Product>
 </Wix>
