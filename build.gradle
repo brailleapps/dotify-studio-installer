@@ -14,6 +14,7 @@ configurations {
 	nsis
 	launch4j
 	app
+	appPlugins
 }
 
 repositories {
@@ -38,6 +39,11 @@ task unzip(type: Copy) {
 		def targetPath = modifyPath(details.path)
 		details.path = targetPath
 	}
+}
+
+task copyPlugins(type: Copy, dependsOn: 'unzip') {
+	from configurations.appPlugins
+	into file("${appBase}/lib/plugins")
 }
 
 def modifyPath(def path) {
@@ -72,7 +78,7 @@ task updateNsisTemplate() {
 	}
 }
 
-task makeAppExe(dependsOn: ['unzip', 'copyResources', 'updateLaunch4jTemplate']) {
+task makeAppExe(dependsOn: ['unzip', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
 	doLast() {
 		ant.taskdef(name: 'launch4j',
 					classname: 'net.sf.launch4j.ant.Launch4jTask',
@@ -104,7 +110,7 @@ def toPaths(subfolder, base, targetPrefix, targetSuffix) {
 }
 
 def toInstallPaths(subfolder, base, targetPrefix) {
-	return "setOutPath \$INSTDIR"+(subfolder==null||"".equals(subfolder)?"":"\\")+"${subfolder}\n" + toPaths(subfolder, base, targetPrefix, "\"") + "\n\n"
+	return "setOutPath \$INSTDIR"+(subfolder==null||"".equals(subfolder)?"":"\\")+subfolder.replaceAll("/", "\\\\") + "\n" + toPaths(subfolder, base, targetPrefix, "\"") + "\n\n"
 }
 
 def toUninstallPaths(subfolder, base) {
@@ -115,7 +121,7 @@ def getInstallPaths(base, targetPrefix) {
 	def baseURI = file(base).toURI()
 	def result = new StringBuilder()
 	result.append(toInstallPaths("", base, targetPrefix))
-	new File(base).eachDir{
+	new File(base).eachDirRecurse{
 		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
 		result.append(toInstallPaths(subfolder[0..-2], base, targetPrefix))
 	}
@@ -126,7 +132,7 @@ def getUninstallPaths(base) {
 	def baseURI = file(base).toURI()
 	def result = new StringBuilder()
 	result.append(toUninstallPaths("", base))
-	new File(base).eachDir{
+	new File(base).eachDirRecurse{
 		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
 		result.append(toUninstallPaths(subfolder[0..-2], base))
 	}
