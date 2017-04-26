@@ -60,6 +60,13 @@ task copyResources(type: Copy) {
 	into ("${tempDir}")
 }
 
+task copyIcon(type: Copy, dependsOn: 'unzip') {
+	from ("${resourceDir}") {
+		include 'favicon.ico'
+	} 
+	into ("${appBase}")
+}
+
 task updateLaunch4jTemplate() {
 	doLast() {
 		String contents = file('ant-build/resources/launch4j.xml').getText('UTF-8')
@@ -78,7 +85,7 @@ task updateNsisTemplate() {
 	}
 }
 
-task makeAppExe(dependsOn: ['unzip', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
+task makeAppExe(dependsOn: ['unzip', 'copyIcon', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
 	doLast() {
 		ant.taskdef(name: 'launch4j',
 					classname: 'net.sf.launch4j.ant.Launch4jTask',
