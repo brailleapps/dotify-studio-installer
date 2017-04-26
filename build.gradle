@@ -74,7 +74,7 @@ task updateLaunch4jTemplate() {
 	}
 }
 
-task updateNsisTemplate() {
+task updateNsisTemplate(dependsOn: 'deleteBin') {
 	doLast() {
 		String replaceInstall = getInstallPaths(appBase, locationPrefix)
 		String replaceUninstall = getUninstallPaths(appBase)
@@ -83,6 +83,10 @@ task updateNsisTemplate() {
 							.replace('${gradle-uninstall-files}', replaceUninstall)
 		file("${tempDir}/installer.nsi").write(contents, 'UTF-8')
 	}
+}
+
+task deleteBin(type: Delete, dependsOn: 'unzip') {
+	delete "${appBase}/bin"
 }
 
 task makeAppExe(dependsOn: ['unzip', 'copyIcon', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
