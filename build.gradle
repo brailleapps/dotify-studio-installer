@@ -11,6 +11,7 @@ def outputDir = 'build/output'
 def resourceDir = 'ant-build/resources'
 def tempDir = 'build/tmp'
 
+def artifactName = "dotify-studio"
 def locationPrefix = "file \"dotify-studio\\"
 def appBase = "${tempDir}/dotify-studio"
 
@@ -28,7 +29,7 @@ repositories {
 }
 
 dependencies {
-	app ("org.daisy.dotify:dotify-studio:$version@zip") {
+	app ("org.daisy.dotify:$artifactName:$version@zip") {
 		transitive false
 	}
 	nsis files('ant-build/resources/nsisant-1.2.jar')
@@ -158,6 +159,8 @@ setupBuilder {
     vendor = 'DAISY Consortium'
     application = releaseName
     appIdentifier = releaseName
+    mainJar = "lib/${artifactName}-${version}.jar"
+    mainClass = 'application.MainFx'
     version = version.replace('-SNAPSHOT', '')
     //licenseFile = 'license.txt'
     // icons in different sizes for different usage. you can also use a single *.ico or *.icns file
@@ -166,11 +169,15 @@ setupBuilder {
     from ("${appBase}") {
         include '**/*.*'
     }
+    desktopStarter {
+        displayName = releaseName
+    }
     failOnEmptyFrom=true
     bundleJre = 1.8
 }
 
 msi.dependsOn('makeAppExe')
+dmg.dependsOn('unzip')
 
 msi {
     // included to reduce the build time
