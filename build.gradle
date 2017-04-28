@@ -158,7 +158,8 @@ def getUninstallPaths(base) {
 setupBuilder {
     vendor = 'DAISY Consortium'
     application = releaseName
-    appIdentifier = releaseName
+    appIdentifier = artifactName
+    description = 'Creates, manages and embosses PEF-files'
     mainJar = "lib/${artifactName}-${version}.jar"
     mainClass = 'application.MainFx'
     version = version.replace('-SNAPSHOT', '')
@@ -182,11 +183,17 @@ setupBuilder {
 
 msi.dependsOn('makeAppExe')
 dmg.dependsOn('unzip')
+deb.dependsOn('unzip')
+rpm.dependsOn('unzip')
 
 msi {
     // included to reduce the build time
     languages = ['en-US']
     wxsTemplate = './ant-build/resources/template.wxs'
+}
+
+deb {
+    maintainerEmail = 'joel.hakansson@mtm.se'
 }
 
 task wrapper(type: Wrapper) {
