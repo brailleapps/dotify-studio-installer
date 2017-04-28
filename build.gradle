@@ -171,6 +171,10 @@ setupBuilder {
     }
     desktopStarter {
         displayName = releaseName
+        description = "Creates, manages and embosses PEF-files"
+        // For now: comment for linux/macOS, uncomment for msi
+        executable = "dotify-studio.exe"
+        location = "ApplicationMenu"
     }
     failOnEmptyFrom=true
     bundleJre = 1.8
