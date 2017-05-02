@@ -83,9 +83,9 @@ setupBuilder {
 }
 
 msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
-dmg.dependsOn('unzip')
-deb.dependsOn('unzip')
-rpm.dependsOn('unzip')
+dmg.dependsOn('unzip', 'copyPlugins')
+deb.dependsOn('unzip', 'copyPlugins')
+rpm.dependsOn('unzip', 'copyPlugins')
 
 msi {
     // included to reduce the build time
