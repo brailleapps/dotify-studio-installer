@@ -3,21 +3,14 @@ plugins {
 }
 
 apply plugin: 'base'
-defaultTasks 'buildInstaller'
 
-def launch4jDir = 'C:\\Program Files (x86)\\Launch4j'
-def nsisDir = 'C:\\Program Files (x86)\\NSIS'
-def outputDir = 'build/output'
 def resourceDir = 'ant-build/resources'
 def tempDir = 'build/tmp'
 
 def artifactName = "dotify-studio"
-def locationPrefix = "file \"dotify-studio\\"
 def appBase = "${tempDir}/dotify-studio"
 
 configurations {
-	nsis
-	launch4j
 	app
 	appPlugins
 }
@@ -25,16 +18,13 @@ configurations {
 repositories {
     mavenCentral()
     //mavenLocal()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    //maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
 	app ("org.daisy.dotify:$artifactName:$version@zip") {
 		transitive false
 	}
-	nsis files('ant-build/resources/nsisant-1.2.jar')
-	launch4j fileTree(dir: "${launch4jDir}/lib", include: '*.jar')
-	launch4j files("${launch4jDir}/launch4j.jar")
 }
 
 task unzip(type: Copy, description: 'Unzips the distribution to a temporary folder.') {
@@ -57,14 +47,6 @@ def modifyPath(def path) {
 	return modified
 }
 
-task copyResources(type: Copy) {
-	from ("${resourceDir}") {
-		include '*.ico'
-		include '*.ttf'
-	} 
-	into ("${tempDir}")
-}
-
 task copyIcon(type: Copy, dependsOn: 'unzip', description: 'Copies file icon to distribution.') {
 	from ("${resourceDir}") {
 		include 'favicon.ico'
@@ -72,87 +54,8 @@ task copyIcon(type: Copy, dependsOn: 'unzip', description: 'Copies file icon to 
 	into ("${appBase}")
 }
 
-task updateLaunch4jTemplate() {
-	doLast() {
-		String contents = file('ant-build/resources/launch4j.xml').getText('UTF-8')
-		file("${tempDir}/launch4j.xml").write(contents.replaceAll('\\Q${version}\\E', "$version"), 'UTF-8')
-	}
-}
-
-task updateNsisTemplate(dependsOn: 'deleteBin') {
-	doLast() {
-		String replaceInstall = getInstallPaths(appBase, locationPrefix)
-		String replaceUninstall = getUninstallPaths(appBase)
-		String contents = file('ant-build/resources/installer.nsi').getText('UTF-8')
-							.replace('${gradle-install-files}', replaceInstall)
-							.replace('${gradle-uninstall-files}', replaceUninstall)
-		file("${tempDir}/installer.nsi").write(contents, 'UTF-8')
-	}
-}
-
 task deleteBin(type: Delete, dependsOn: 'unzip', description: 'Removes the bin folder from the distribution.') {
 	delete "${appBase}/bin"
-}
-
-task makeAppExe(dependsOn: ['unzip', 'deleteBin', 'copyIcon', 'copyPlugins', 'copyResources', 'updateLaunch4jTemplate']) {
-	doLast() {
-		ant.taskdef(name: 'launch4j',
-					classname: 'net.sf.launch4j.ant.Launch4jTask',
-					classpath: configurations.launch4j.asPath)
-		ant.launch4j(configFile: "${tempDir}/launch4j.xml")
-	}
-}
-
-task buildInstaller(dependsOn: ['makeAppExe', 'updateNsisTemplate']) {
-	doLast() {
-		new File("${projectDir}/${outputDir}/dist").mkdirs()
-		ant.taskdef(name: 'nsis', 
-			classname: 'net.sf.nsisant.Task',
-			classpath: configurations.nsis.asPath)
-		ant.nsis(script: "${tempDir}/installer.nsi",
-				verbosity: 2,
-				path: nsisDir)
-	}
-}
-
-def toPaths(subfolder, base, targetPrefix, targetSuffix) {
-	def baseURI = file(base).toURI()
-	def from = subfolder==null||"".equals(subfolder)?base:"${base}/${subfolder}"
-	return fileTree(dir: from, include: '*')
-				.filter{it.isFile()}
-				.files
-				.collect{"${targetPrefix}"+ URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8").replaceAll("/", "\\\\") +targetSuffix}
-				.join('\n')
-}
-
-def toInstallPaths(subfolder, base, targetPrefix) {
-	return "setOutPath \$INSTDIR"+(subfolder==null||"".equals(subfolder)?"":"\\")+subfolder.replaceAll("/", "\\\\") + "\n" + toPaths(subfolder, base, targetPrefix, "\"") + "\n\n"
-}
-
-def toUninstallPaths(subfolder, base) {
-	return toPaths(subfolder, base, "delete \"\$INSTDIR\\", "\"") +"\n\n"
-}
-
-def getInstallPaths(base, targetPrefix) {
-	def baseURI = file(base).toURI()
-	def result = new StringBuilder()
-	result.append(toInstallPaths("", base, targetPrefix))
-	new File(base).eachDirRecurse{
-		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
-		result.append(toInstallPaths(subfolder[0..-2], base, targetPrefix))
-	}
-	return result.toString()
-}
-
-def getUninstallPaths(base) {
-	def baseURI = file(base).toURI()
-	def result = new StringBuilder()
-	result.append(toUninstallPaths("", base))
-	new File(base).eachDirRecurse{
-		def subfolder = URLDecoder.decode(baseURI.relativize(it.toURI()).toString(), "utf-8")
-		result.append(toUninstallPaths(subfolder[0..-2], base))
-	}
-	return result.toString()
 }
 
 setupBuilder {
@@ -162,7 +65,6 @@ setupBuilder {
     description = 'Creates, manages and embosses PEF-files'
     mainJar = "lib/${artifactName}-${version}.jar"
     mainClass = 'application.MainFx'
-    version = version.replace('-SNAPSHOT', '')
     //licenseFile = 'license.txt'
     // icons in different sizes for different usage. you can also use a single *.ico or *.icns file
 	icons = ['ant-build/resources/app-icon.ico']
