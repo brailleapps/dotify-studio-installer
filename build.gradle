@@ -37,7 +37,7 @@ dependencies {
 	launch4j files("${launch4jDir}/launch4j.jar")
 }
 
-task unzip(type: Copy) {
+task unzip(type: Copy, description: 'Unzips the distribution to a temporary folder.') {
     from zipTree(file(configurations.app.iterator().next()))
     into file("${tempDir}")
     eachFile {details ->
@@ -46,7 +46,7 @@ task unzip(type: Copy) {
 	}
 }
 
-task copyPlugins(type: Copy, dependsOn: 'unzip') {
+task copyPlugins(type: Copy, dependsOn: 'unzip', description: 'Copies additional jars to the plugins folder (requires editing of build.gradle)') {
 	from configurations.appPlugins
 	into file("${appBase}/lib/plugins")
 }
@@ -65,7 +65,7 @@ task copyResources(type: Copy) {
 	into ("${tempDir}")
 }
 
-task copyIcon(type: Copy, dependsOn: 'unzip') {
+task copyIcon(type: Copy, dependsOn: 'unzip', description: 'Copies file icon to distribution.') {
 	from ("${resourceDir}") {
 		include 'favicon.ico'
 	} 
@@ -90,7 +90,7 @@ task updateNsisTemplate(dependsOn: 'deleteBin') {
 	}
 }
 
-task deleteBin(type: Delete, dependsOn: 'unzip') {
+task deleteBin(type: Delete, dependsOn: 'unzip', description: 'Removes the bin folder from the distribution.') {
 	delete "${appBase}/bin"
 }
 
@@ -178,10 +178,9 @@ setupBuilder {
         location = "ApplicationMenu"
     }
     failOnEmptyFrom=true
-    bundleJre = 1.8
 }
 
-msi.dependsOn('makeAppExe')
+msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
 dmg.dependsOn('unzip')
 deb.dependsOn('unzip')
 rpm.dependsOn('unzip')
@@ -190,12 +189,17 @@ msi {
     // included to reduce the build time
     languages = ['en-US']
     wxsTemplate = './ant-build/resources/template.wxs'
+    launch4j {
+		mainJar = "lib/${artifactName}-${version}.jar"
+		mainClass = 'application.MainFx'
+		executable = 'dotify-studio.exe'
+    }
 }
 
 deb {
     maintainerEmail = 'joel.hakansson@mtm.se'
 }
 
-task wrapper(type: Wrapper) {
+task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
     gradleVersion = '3.0'
 }
