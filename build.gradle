@@ -70,16 +70,35 @@ setupBuilder {
 	icons = ['ant-build/resources/app-icon.ico']
     // files for all platforms
     from ("${appBase}") {
-        include '**/*.*'
+        include '**/*'
     }
-    desktopStarter {
+	desktopStarter {
         displayName = releaseName
         description = "Creates, manages and embosses PEF-files"
-        // For now: comment for linux/macOS, uncomment for msi
-        executable = "dotify-studio.exe"
-        location = "ApplicationMenu"
-    }
+    }   
     failOnEmptyFrom=true
+}
+
+configure( [msi] ) {
+    doFirst {
+        setupBuilder {
+		    desktopStarter {
+		        executable = "dotify-studio.exe"
+		        location = "ApplicationMenu"
+		    }            
+        }
+    }
+}
+
+configure( [dmg, deb, rpm] ) {
+    doFirst {
+        setupBuilder {
+		    desktopStarter {
+		        executable = "bin/dotify-studio"
+		        location = "ApplicationMenu"
+		    }
+        }
+    }
 }
 
 msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
