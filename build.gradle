@@ -122,5 +122,5 @@ deb {
 }
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
-    gradleVersion = '3.0'
+    gradleVersion = '3.5'
 }
