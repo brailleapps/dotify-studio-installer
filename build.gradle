@@ -96,6 +96,7 @@ configure( [dmg, deb, rpm] ) {
 		    desktopStarter {
 		        executable = "bin/dotify-studio"
 		        location = "ApplicationMenu"
+				categories = "Office"
 		    }
         }
     }
@@ -119,7 +120,13 @@ msi {
 
 deb {
     maintainerEmail = 'joel.hakansson@mtm.se'
+    postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
 }
+
+rpm {
+    postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
+}
+
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
     gradleVersion = '3.5'
