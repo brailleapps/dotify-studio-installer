@@ -91,7 +91,7 @@ configure( [msi] ) {
     }
 }
 
-configure( [dmg, deb, rpm] ) {
+configure( [deb, rpm] ) {
     doFirst {
         setupBuilder {
 		    desktopStarter {
@@ -130,5 +130,5 @@ rpm {
 
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
-    gradleVersion = '3.5'
+    gradleVersion = '3.0'
 }
