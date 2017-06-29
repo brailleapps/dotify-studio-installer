@@ -39,10 +39,7 @@
 				<RegistryValue Type="string" Value="[INSTALLDIR]favicon.ico,0"/>
 			</RegistryKey>
 			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat\shell\open\command">
-				<RegistryValue Type="string" Value="&quot;[INSTALLDIR]dotify-studio.exe&quot; -view &quot;%1&quot;"/>
-			</RegistryKey>
-			<RegistryKey Root="HKCR" Key="dotify-studio.PortableEmbosserFormat\shell\print\command">
-				<RegistryValue Type="string" Value="&quot;[INSTALLDIR]dotify-studio.exe&quot; -emboss &quot;%1&quot;"/>
+				<RegistryValue Type="string" Value="&quot;[INSTALLDIR]dotify-studio.exe&quot; -open &quot;%1&quot;"/>
 			</RegistryKey>
 		</Component>
 	</DirectoryRef>
