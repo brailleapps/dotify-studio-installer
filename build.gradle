@@ -80,7 +80,22 @@ setupBuilder {
     failOnEmptyFrom=true
 }
 
-configure( [msi] ) {
+task msi32( type: com.inet.gradle.setup.msi.Msi ) {
+	//32 bit specifics
+    arch = "x86"
+    classifier = "x86"
+}
+
+configure( [msi, msi32] ) {
+    // included to reduce the build time
+    languages = ['en-US']
+    wxsTemplate = './ant-build/resources/template.wxs'
+    launch4j {
+		mainJar = "lib/${artifactName}-${version}.jar"
+		mainClass = 'application.MainFx'
+		executable = 'dotify-studio.exe'
+    }
+
     doFirst {
         setupBuilder {
 		    desktopStarter {
@@ -104,20 +119,10 @@ configure( [deb, rpm] ) {
 }
 
 msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
+msi32.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
 dmg.dependsOn('unzip', 'copyPlugins')
 deb.dependsOn('unzip', 'copyPlugins')
 rpm.dependsOn('unzip', 'copyPlugins')
-
-msi {
-    // included to reduce the build time
-    languages = ['en-US']
-    wxsTemplate = './ant-build/resources/template.wxs'
-    launch4j {
-		mainJar = "lib/${artifactName}-${version}.jar"
-		mainClass = 'application.MainFx'
-		executable = 'dotify-studio.exe'
-    }
-}
 
 deb {
     maintainerEmail = 'joel.hakansson@mtm.se'
