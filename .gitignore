@@ -1,3 +1,4 @@
 .gradle
 ant-build/output/
 /build/
+.settings/
