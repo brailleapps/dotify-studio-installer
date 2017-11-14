@@ -1,5 +1,6 @@
 plugins {
   id "de.inetsoftware.setupbuilder" version "3.4.3"
+  id 'edu.sc.seis.launch4j' version '2.4.2'
 }
 
 apply plugin: 'base'
@@ -55,9 +56,30 @@ task copyIcon(type: Copy, dependsOn: 'unzip', description: 'Copies file icon to 
 	into ("${appBase}")
 }
 
+task copyExe(type: Copy, dependsOn: 'createExe') {
+	from ('build/launch4j') {
+		include '*.exe'
+	} 
+	into ("${appBase}")
+}
+
 task deleteBin(type: Delete, dependsOn: 'unzip', description: 'Removes the bin folder from the distribution.') {
 	delete "${appBase}/bin"
 }
+
+def launch4jManifest = file("$buildDir/launch4j.manifest") 
+
+task createLaunch4jManifest(description: 'Creates the Launch4j manifest from a template.') {
+	doLast() {
+		String contents = file('ant-build/resources/launch4j.manifest').getText('UTF-8')
+		launch4jManifest.getParentFile().mkdirs()
+		launch4jManifest.write(contents.replaceAll('(<assemblyIdentity.+? version=")([\\d\\.A-Za-z\\-]+)("\\/>)', "\$1$version.0\$3"), 'UTF-8')
+	}
+	outputs.file launch4jManifest
+	outputs.upToDateWhen{ file('gradle.properties').lastModified()<file(launch4jManifest).lastModified() }
+}
+
+createExe.dependsOn('createLaunch4jManifest')
 
 setupBuilder {
     vendor = 'DAISY Consortium'
@@ -86,15 +108,21 @@ task msi32( type: com.inet.gradle.setup.msi.Msi ) {
     classifier = "x86"
 }
 
+launch4j {
+	mainClassName = 'application.MainFx'
+	dontWrapJar = true
+	icon = '../../ant-build/resources/app-icon.ico'
+	manifest = '../launch4j.manifest'
+	jar = "lib/${artifactName}-${version}.jar"
+	copyConfigurable = files { file("${tempDir}/dotify-studio/lib").listFiles() }
+	outfile = 'dotify-studio.exe'
+	jreMinVersion = '1.8.0_40'
+}
+
 configure( [msi, msi32] ) {
     // included to reduce the build time
     languages = ['en-US']
     wxsTemplate = './ant-build/resources/template.wxs'
-    launch4j {
-		mainJar = "lib/${artifactName}-${version}.jar"
-		mainClass = 'application.MainFx'
-		executable = 'dotify-studio.exe'
-    }
 
     doFirst {
         setupBuilder {
@@ -120,8 +148,8 @@ configure( [deb, rpm] ) {
     }
 }
 
-msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
-msi32.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
+msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins', 'copyExe')
+msi32.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins', 'copyExe')
 dmg.dependsOn('unzip', 'copyPlugins')
 deb.dependsOn('unzip', 'copyPlugins')
 rpm.dependsOn('unzip', 'copyPlugins')
