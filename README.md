@@ -1,13 +1,15 @@
+[![Build Status](https://travis-ci.org/brailleapps/dotify-studio-installer.svg?branch=master)](https://travis-ci.org/brailleapps/dotify-studio-installer)
 
 # Dotify Studio Installer #
-Provides an installer för Dotify Studio, a graphical user interface for embossing PEF-files.
+Provides an installer för Dotify Studio, a graphical user interface for creating, managing and embossing PEF-files.
 
 ## Building ##
 Build an installer on the target platform with the corresponding command.
   
 | Platform  | Command                          |
 | :---------| :------------------------------- |
-| Windows   | `gradlew msi`                |
+| Windows  (x64) | `gradlew msi`                |
+| Windows (x86)   | `gradlew msi32`                |
 | Linux     | `./gradlew rpm`              |
 | Linux     | `./gradlew deb`              |
 | maOS     | `./gradlew dmg`               |
