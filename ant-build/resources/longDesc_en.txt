@@ -1,0 +1,1 @@
+Dotify Studio is an application for creating, managing and embossing PEf-files.

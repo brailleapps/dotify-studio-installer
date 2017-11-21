@@ -1,5 +1,5 @@
 plugins {
-  id "de.inetsoftware.setupbuilder" version "1.8.0"
+  id "de.inetsoftware.setupbuilder" version "3.4.3"
 }
 
 apply plugin: 'base'
@@ -109,11 +109,13 @@ configure( [msi, msi32] ) {
 configure( [deb, rpm] ) {
     doFirst {
         setupBuilder {
-		    desktopStarter {
-		        executable = "bin/dotify-studio"
-		        location = "ApplicationMenu"
-				categories = "Office"
-		    }
+		defaultResourceLanguage 'en'
+		longDescription 'ant-build/resources/longDesc_en.txt'
+		desktopStarter {
+			executable = "bin/dotify-studio"
+			location = "ApplicationMenu"
+			categories = "Office"
+		}
         }
     }
 }
@@ -126,6 +128,7 @@ rpm.dependsOn('unzip', 'copyPlugins')
 
 deb {
     maintainerEmail = 'joel.hakansson@mtm.se'
+    section = 'text'
     postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
 }
 
@@ -135,5 +138,5 @@ rpm {
 
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
-    gradleVersion = '3.0'
+    gradleVersion = '3.5'
 }
