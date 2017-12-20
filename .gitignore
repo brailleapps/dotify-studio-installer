@@ -2,3 +2,4 @@
 ant-build/output/
 /build/
 .settings/
+.project
