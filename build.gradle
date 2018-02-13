@@ -78,6 +78,7 @@ setupBuilder {
         description = "Creates, manages and embosses PEF-files"
     }   
     failOnEmptyFrom=true
+    bundleJre = 1.8
 }
 
 task msi32( type: com.inet.gradle.setup.msi.Msi ) {
@@ -90,16 +91,10 @@ configure( [msi, msi32] ) {
     // included to reduce the build time
     languages = ['en-US']
     wxsTemplate = './ant-build/resources/template.wxs'
-    launch4j {
-		mainJar = "lib/${artifactName}-${version}.jar"
-		mainClass = 'application.MainFx'
-		executable = 'dotify-studio.exe'
-    }
 
     doFirst {
         setupBuilder {
 		    desktopStarter {
-		        executable = "dotify-studio.exe"
 		        location = "ApplicationMenu"
 		    }            
         }
@@ -112,7 +107,6 @@ configure( [deb, rpm] ) {
 		defaultResourceLanguage 'en'
 		longDescription 'ant-build/resources/longDesc_en.txt'
 		desktopStarter {
-			executable = "bin/dotify-studio"
 			location = "ApplicationMenu"
 			categories = "Office"
 		}
@@ -122,20 +116,14 @@ configure( [deb, rpm] ) {
 
 msi.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
 msi32.dependsOn('unzip', 'deleteBin', 'copyIcon', 'copyPlugins')
-dmg.dependsOn('unzip', 'copyPlugins')
-deb.dependsOn('unzip', 'copyPlugins')
-rpm.dependsOn('unzip', 'copyPlugins')
+dmg.dependsOn('unzip', 'deleteBin', 'copyPlugins')
+deb.dependsOn('unzip', 'deleteBin', 'copyPlugins')
+rpm.dependsOn('unzip', 'deleteBin', 'copyPlugins')
 
 deb {
     maintainerEmail = 'joel.hakansson@mtm.se'
     section = 'text'
-    postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
 }
-
-rpm {
-    postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
-}
-
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
     gradleVersion = '3.5'
