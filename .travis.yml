@@ -1,5 +1,5 @@
 language: java
 os: osx
-osx_image: xcode9.1
+osx_image: xcode9.2
 script: ./gradlew dmg
 after_success: ./publish.sh
