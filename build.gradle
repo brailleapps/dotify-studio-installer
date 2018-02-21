@@ -95,10 +95,6 @@ setupBuilder {
     from ("${appBase}") {
         include '**/*'
     }
-	desktopStarter {
-        displayName = releaseName
-        description = "Creates, manages and embosses PEF-files"
-    }   
     failOnEmptyFrom=true
 }
 
@@ -116,7 +112,7 @@ launch4j {
 	jar = "lib/${artifactName}-${version}.jar"
 	copyConfigurable = files { file("${tempDir}/dotify-studio/lib").listFiles() }
 	outfile = 'dotify-studio.exe'
-	jreMinVersion = '1.8.0_40'
+	bundledJrePath = 'jre'
 }
 
 configure( [msi, msi32] ) {
@@ -127,11 +123,26 @@ configure( [msi, msi32] ) {
     doFirst {
         setupBuilder {
 		    desktopStarter {
+		    	displayName = releaseName
+        		description = appDescription
 		        executable = "dotify-studio.exe"
 		        location = "ApplicationMenu"
-		    }            
+		    }
+		    bundleJre = 1.8
         }
     }
+}
+
+configure( [dmg] ) {
+	doFirst {
+		setupBuilder {
+			desktopStarter {
+				displayName = releaseName
+				description = appDescription
+			}
+			bundleJre = 1.8
+		}
+	}
 }
 
 configure( [deb, rpm] ) {
@@ -140,6 +151,8 @@ configure( [deb, rpm] ) {
 		defaultResourceLanguage 'en'
 		longDescription 'ant-build/resources/longDesc_en.txt'
 		desktopStarter {
+			displayName = releaseName
+        	description = appDescription
 			executable = "bin/dotify-studio"
 			location = "ApplicationMenu"
 			categories = "Office"
