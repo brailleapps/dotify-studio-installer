@@ -87,7 +87,7 @@ setupBuilder {
     appIdentifier = artifactName
     description = 'Creates, manages and embosses PEF-files'
     mainJar = "lib/${artifactName}-${version}.jar"
-    mainClass = 'application.MainFx'
+    mainClass = 'application.ui.MainFx'
     //licenseFile = 'license.txt'
     // icons in different sizes for different usage. you can also use a single *.ico or *.icns file
 	icons = ['ant-build/resources/app-icon.ico']
@@ -105,7 +105,7 @@ task msi32( type: com.inet.gradle.setup.msi.Msi ) {
 }
 
 launch4j {
-	mainClassName = 'application.MainFx'
+	mainClassName = 'application.ui.MainFx'
 	dontWrapJar = true
 	icon = '../../ant-build/resources/app-icon.ico'
 	manifest = '../launch4j.manifest'
