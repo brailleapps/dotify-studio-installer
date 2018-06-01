@@ -177,6 +177,31 @@ rpm {
     postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
 }
 
+task javapackager(dependsOn: 'unzip', description: 'Uses javapackager to create installers (experimental).') {
+	doLast() {
+		String path = file('build/javapackager').getAbsolutePath()
+		// JDK is required. Also, cannot use java.home because it might return the jre.
+		String cp = System.getenv("JAVA_HOME") + '/lib/ant-javafx.jar'
+		String filename = 'dotify-studio'
+		ant {
+			taskdef (resource:'com/sun/javafx/tools/ant/antlib.xml', 
+				uri: 'javafx:com.sun.javafx.tools.ant',
+				classpath: cp
+			)
+			'javafx:com.sun.javafx.tools.ant:deploy'(outdir: path, outfile: filename, nativeBundles: 'installer') { 
+				info(title: releaseName, description: appDescription)
+				application(
+					name: filename, 
+					mainClass: 'application.ui.MainFx',
+					version: version
+				)
+				resources {
+					fileset(dir: "${tempDir}/dotify-studio", includes: '**/*.*')
+				}
+			}
+		}
+	}
+}
 
 task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
     gradleVersion = '3.5'
