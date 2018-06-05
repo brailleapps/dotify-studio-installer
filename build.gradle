@@ -177,17 +177,67 @@ rpm {
     postinst = 'chmod +x /usr/share/dotify-studio/bin/dotify-studio'
 }
 
+// Javapackager
+
+ant.taskdef (resource:'com/sun/javafx/tools/ant/antlib.xml', 
+	uri: 'javafx:com.sun.javafx.tools.ant',
+	// JDK is required. Also, cannot use java.home because it might return the jre.
+	classpath: System.getenv("JAVA_HOME") + '/lib/ant-javafx.jar'
+)
+
+def javaPackagerFolder = file('build/javapackager');
+
+ext.runJavaPackager = { bundles, appIcon ->
+	String path = javaPackagerFolder.getAbsolutePath()
+
+	ant {
+		'javafx:com.sun.javafx.tools.ant:deploy'(outdir: path, outfile: 'dotify-studio', nativeBundles: bundles) { 
+			info(title: releaseName, description: appDescription, category: 'Office') {
+				icon(href: appIcon)
+				association(
+					extension: 'pef',
+					description: 'Portable embosser format',
+					mimetype: 'application/x-pef+xml'
+				)
+				association(
+					extension: 'obfl',
+					description: 'Open braille formatting language',
+					mimetype: 'application/x-obfl+xml'
+				)
+			}
+			application(
+				name: releaseName, 
+				mainClass: 'application.ui.MainFx',
+				version: version
+			)
+			resources {
+				fileset(dir: "${tempDir}/dotify-studio", includes: '**/*.*')
+			}
+			bundleArgument(arg: 'email', value: 'joel.hakansson@mtm.se')
+		}
+	}
+
+}
+
+task jpDeb(dependsOn: 'unzip', description: 'Uses javapackager to create deb installer (experimental).') {
+	doLast() {
+		runJavaPackager('deb', file('ant-build/resources/app-icon.png').getAbsolutePath())
+	}
+	outputs.dir javaPackagerFolder
+}
+
+task jpRpm(dependsOn: 'unzip', description: 'Uses javapackager to create rpm installer (experimental).') {
+	doLast() {
+		runJavaPackager('rpm', file('ant-build/resources/app-icon.png').getAbsolutePath())
+	}
+	outputs.dir javaPackagerFolder
+}
+
 task javapackager(dependsOn: 'unzip', description: 'Uses javapackager to create installers (experimental).') {
 	doLast() {
 		String path = file('build/javapackager').getAbsolutePath()
-		// JDK is required. Also, cannot use java.home because it might return the jre.
-		String cp = System.getenv("JAVA_HOME") + '/lib/ant-javafx.jar'
 		String filename = 'dotify-studio'
 		ant {
-			taskdef (resource:'com/sun/javafx/tools/ant/antlib.xml', 
-				uri: 'javafx:com.sun.javafx.tools.ant',
-				classpath: cp
-			)
 			'javafx:com.sun.javafx.tools.ant:deploy'(outdir: path, outfile: filename, nativeBundles: 'installer') { 
 				info(title: releaseName, description: appDescription)
 				application(
