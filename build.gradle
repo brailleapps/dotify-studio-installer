@@ -38,6 +38,15 @@ task unzip(type: Copy, description: 'Unzips the distribution to a temporary fold
 	}
 }
 
+task unzipFlatLib(type: Copy, description: 'Unzips the distribution to a temporary folder.') {
+	from zipTree(file(configurations.app.iterator().next()))
+	into file("${tempDir}")
+	eachFile {details ->
+		def targetPath = modifyPathFlatLib(details.path)
+		details.path = targetPath
+	}
+}
+
 task copyPlugins(type: Copy, dependsOn: 'unzip', description: 'Copies additional jars to the plugins folder (requires editing of build.gradle)') {
 	from configurations.appPlugins
 	into file("${appBase}/lib/plugins")
@@ -45,8 +54,13 @@ task copyPlugins(type: Copy, dependsOn: 'unzip', description: 'Copies additional
 
 def modifyPath(def path) {
 	def modified=path.replaceAll('\\Adotify-studio[^/]*(.+)', {"dotify-studio${it[1]}"})
-	println modified
 	return modified
+}
+
+def modifyPathFlatLib(def path) {
+	def modified=path.replaceAll('\\Adotify-studio[^/]*(.+)', {"dotify-studio${it[1]}"})
+	// Remove the 'lib' part of the path because the app.mainjar property of the cfg file that java packager generates cannot be set.
+	return modified.replaceAll('\\Adotify-studio/lib/(.*)', {"dotify-studio/${it[1]}"})
 }
 
 task copyIcon(type: Copy, dependsOn: 'unzip', description: 'Copies file icon to distribution.') {
@@ -64,6 +78,10 @@ task copyExe(type: Copy, dependsOn: 'createExe') {
 }
 
 task deleteBin(type: Delete, dependsOn: 'unzip', description: 'Removes the bin folder from the distribution.') {
+	delete "${appBase}/bin"
+}
+
+task deleteBinFlatLib(type: Delete, dependsOn: 'unzipFlatLib', description: 'Removes the bin folder from the distribution.') {
 	delete "${appBase}/bin"
 }
 
@@ -187,7 +205,7 @@ ant.taskdef (resource:'com/sun/javafx/tools/ant/antlib.xml',
 
 def javaPackagerFolder = file('build/javapackager');
 
-ext.runJavaPackager = { bundles, appIcon ->
+ext.runJavaPackager = { bundles, appIcon, appName ->
 	String path = javaPackagerFolder.getAbsolutePath()
 
 	ant {
@@ -206,7 +224,7 @@ ext.runJavaPackager = { bundles, appIcon ->
 				)
 			}
 			application(
-				name: releaseName, 
+				name: appName, 
 				mainClass: 'application.ui.MainFx',
 				version: version
 			)
@@ -214,21 +232,29 @@ ext.runJavaPackager = { bundles, appIcon ->
 				fileset(dir: "${tempDir}/dotify-studio", includes: '**/*.*')
 			}
 			bundleArgument(arg: 'email', value: 'joel.hakansson@mtm.se')
+			bundleArgument(arg: 'win.menuGroup', value: releaseName)
 		}
 	}
 
 }
 
+task jpMsi(dependsOn: 'deleteBinFlatLib', description: 'Uses javapackager to create msi installer (experimental).') {
+	doLast() {
+		runJavaPackager('msi', file('ant-build/resources/app-icon.ico').getAbsolutePath(), 'dotify-studio')
+	}
+	outputs.dir javaPackagerFolder
+}
+
 task jpDeb(dependsOn: 'unzip', description: 'Uses javapackager to create deb installer (experimental).') {
 	doLast() {
-		runJavaPackager('deb', file('ant-build/resources/app-icon.png').getAbsolutePath())
+		runJavaPackager('deb', file('ant-build/resources/app-icon.png').getAbsolutePath(), releaseName)
 	}
 	outputs.dir javaPackagerFolder
 }
 
 task jpRpm(dependsOn: 'unzip', description: 'Uses javapackager to create rpm installer (experimental).') {
 	doLast() {
-		runJavaPackager('rpm', file('ant-build/resources/app-icon.png').getAbsolutePath())
+		runJavaPackager('rpm', file('ant-build/resources/app-icon.png').getAbsolutePath(), releaseName)
 	}
 	outputs.dir javaPackagerFolder
 }
