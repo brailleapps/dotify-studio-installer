@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'base'
 
-def resourceDir = 'ant-build/resources'
+def resourceDir = 'build-resources'
 def tempDir = 'build/tmp'
 
 def artifactName = "dotify-studio"
@@ -89,7 +89,7 @@ def launch4jManifest = file("$buildDir/launch4j.manifest")
 
 task createLaunch4jManifest(description: 'Creates the Launch4j manifest from a template.') {
 	doLast() {
-		String contents = file('ant-build/resources/launch4j.manifest').getText('UTF-8')
+		String contents = file('build-resources/launch4j.manifest').getText('UTF-8')
 		launch4jManifest.getParentFile().mkdirs()
 		launch4jManifest.write(contents.replaceAll('(<assemblyIdentity.+? version=")([\\d\\.A-Za-z\\-]+)("\\/>)', "\$1$version.0\$3"), 'UTF-8')
 	}
@@ -108,7 +108,7 @@ setupBuilder {
     mainClass = 'application.ui.MainFx'
     //licenseFile = 'license.txt'
     // icons in different sizes for different usage. you can also use a single *.ico or *.icns file
-	icons = ['ant-build/resources/app-icon.ico']
+	icons = ['build-resources/app-icon.ico']
     // files for all platforms
     from ("${appBase}") {
         include '**/*'
@@ -125,7 +125,7 @@ task msi32( type: com.inet.gradle.setup.msi.Msi ) {
 launch4j {
 	mainClassName = 'application.ui.MainFx'
 	dontWrapJar = true
-	icon = '../../ant-build/resources/app-icon.ico'
+	icon = '../../build-resources/app-icon.ico'
 	manifest = '../launch4j.manifest'
 	jar = "lib/${artifactName}-${version}.jar"
 	copyConfigurable = files { file("${tempDir}/dotify-studio/lib").listFiles() }
@@ -136,7 +136,7 @@ launch4j {
 configure( [msi, msi32] ) {
     // included to reduce the build time
     languages = ['en-US']
-    wxsTemplate = './ant-build/resources/template.wxs'
+    wxsTemplate = './build-resources/template.wxs'
 
     doFirst {
         setupBuilder {
@@ -167,7 +167,7 @@ configure( [deb, rpm] ) {
     doFirst {
         setupBuilder {
 		defaultResourceLanguage 'en'
-		longDescription 'ant-build/resources/longDesc_en.txt'
+		longDescription 'build-resources/longDesc_en.txt'
 		desktopStarter {
 			displayName = releaseName
         	description = appDescription
@@ -240,21 +240,21 @@ ext.runJavaPackager = { bundles, appIcon, appName ->
 
 task jpMsi(dependsOn: 'deleteBinFlatLib', description: 'Uses javapackager to create msi installer (experimental).') {
 	doLast() {
-		runJavaPackager('msi', file('ant-build/resources/app-icon.ico').getAbsolutePath(), 'dotify-studio')
+		runJavaPackager('msi', file('build-resources/app-icon.ico').getAbsolutePath(), 'dotify-studio')
 	}
 	outputs.dir javaPackagerFolder
 }
 
 task jpDeb(dependsOn: 'unzip', description: 'Uses javapackager to create deb installer (experimental).') {
 	doLast() {
-		runJavaPackager('deb', file('ant-build/resources/app-icon.png').getAbsolutePath(), releaseName)
+		runJavaPackager('deb', file('build-resources/app-icon.png').getAbsolutePath(), releaseName)
 	}
 	outputs.dir javaPackagerFolder
 }
 
 task jpRpm(dependsOn: 'unzip', description: 'Uses javapackager to create rpm installer (experimental).') {
 	doLast() {
-		runJavaPackager('rpm', file('ant-build/resources/app-icon.png').getAbsolutePath(), releaseName)
+		runJavaPackager('rpm', file('build-resources/app-icon.png').getAbsolutePath(), releaseName)
 	}
 	outputs.dir javaPackagerFolder
 }

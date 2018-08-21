@@ -24,7 +24,7 @@
 	<DirectoryRef Id="FontsFolder">
 		<Component Id="InstallFonts">
 			<!-- This path is relative to the generated wxs file under build/tmp/msi -->
-			<File Id="odt2braille6.ttf" Source="..\..\..\ant-build\resources\odt2braille6.ttf" TrueType="yes" />
+			<File Id="odt2braille6.ttf" Source="..\..\..\build-resources\odt2braille6.ttf" TrueType="yes" />
 		</Component>
 	</DirectoryRef>
 	<DirectoryRef Id="INSTALLDIR">
