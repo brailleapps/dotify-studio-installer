@@ -1,9 +1,8 @@
 plugins {
-  id "de.inetsoftware.setupbuilder" version "3.4.3"
-  id 'edu.sc.seis.launch4j' version '2.4.2'
+	id 'base'
+	id "de.inetsoftware.setupbuilder" version "3.4.3"
+	id 'edu.sc.seis.launch4j' version '2.4.2'
 }
-
-apply plugin: 'base'
 
 def resourceDir = 'build-resources'
 def tempDir = 'build/tmp'
