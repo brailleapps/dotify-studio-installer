@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/brailleapps/dotify-studio-installer.svg?branch=master)](https://travis-ci.org/brailleapps/dotify-studio-installer)
+[![Build Status](https://travis-ci.com/brailleapps/dotify-studio-installer.svg?branch=master)](https://travis-ci.com/brailleapps/dotify-studio-installer)
 
 # Dotify Studio Installer #
 Provides an installer för Dotify Studio, a graphical user interface for creating, managing and embossing PEF-files.
