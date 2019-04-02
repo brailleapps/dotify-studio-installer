@@ -278,6 +278,6 @@ task javapackager(dependsOn: 'unzip', description: 'Uses javapackager to create 
 	}
 }
 
-task wrapper(type: Wrapper, description: 'Refreshes the gradle wrapper') {
-    gradleVersion = '3.5'
+wrapper {
+	distributionType = Wrapper.DistributionType.ALL
 }
